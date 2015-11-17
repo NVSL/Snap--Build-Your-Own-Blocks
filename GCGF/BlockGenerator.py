@@ -57,7 +57,7 @@ for component in library:
     translation_unit = index.parse(path, ['-x', 'c++', '-std=c++11', '-D__CODE_GENERATOR__'])
     classes = build_classes(translation_unit.cursor, path)
     for aClass in classes:
-        #print 'For class ' + aClass.name + ', public methods:'
+        hasSetup = False
         for aFunction in aClass.functions:
             #print aFunction
 	    newBlock = ET.SubElement( root, "block-definition" )
@@ -69,5 +69,9 @@ for component in library:
 	    for param in aFunction.params:
 	        input = ET.SubElement( inputs, "input" )
 		input.set("type", determineParamType( param[1] ))
-#tree = ET2.ElementTree( root )
+		if( param[0] is "setup" ):
+		    hasSetup = True
+        if hasSetup is False:
+            raise Exception( aClass.name + " has no setup() method!")
 print ET2.tostring( root, pretty_print=True )
+#tree = ET2.ElementTree( root )
